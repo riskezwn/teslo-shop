@@ -1,7 +1,11 @@
 import React from 'react';
 import type { NextPage } from 'next';
-import { Typography } from '@mui/material';
+import {
+  Typography,
+} from '@mui/material';
+import { ProductList } from '../components/products';
 import { ShopLayout } from '../components/layouts';
+import initialData from '../database/products';
 
 const HomePage: NextPage = () => (
   <ShopLayout title="Teslo Shop" pageDescription="Find Teslo's better products here">
@@ -14,6 +18,8 @@ const HomePage: NextPage = () => (
     >
       All products
     </Typography>
+
+    <ProductList products={initialData.products as any} />
   </ShopLayout>
 );
 
