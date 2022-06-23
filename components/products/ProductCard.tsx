@@ -1,7 +1,7 @@
 import React, { FC, useState } from 'react';
+import NextLink from 'next/link';
 import {
-  Box,
-  Card, CardActionArea, CardMedia, Grid, Typography,
+  Box, Card, CardActionArea, CardMedia, Grid, Typography,
 } from '@mui/material';
 import { IProduct } from '../../interfaces';
 
@@ -21,26 +21,28 @@ export const ProductCard: FC<Props> = ({ product }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Card>
-        <CardActionArea>
-          {
-            isHovered
-              ? (
-                <CardMedia
-                  component="img"
-                  image={`products/${product.images[1]}`}
-                  alt={product.title}
-                  className="fadeIn"
-                />
-              )
-              : (
-                <CardMedia
-                  component="img"
-                  image={`products/${product.images[0]}`}
-                  className="fadeIn"
-                />
-              )
-          }
-        </CardActionArea>
+        <NextLink href="/product/slug" passHref prefetch={false}>
+          <CardActionArea>
+            {
+              isHovered
+                ? (
+                  <CardMedia
+                    component="img"
+                    image={`products/${product.images[1]}`}
+                    alt={product.title}
+                    className="fadeIn"
+                  />
+                )
+                : (
+                  <CardMedia
+                    component="img"
+                    image={`products/${product.images[0]}`}
+                    className="fadeIn"
+                  />
+                )
+            }
+          </CardActionArea>
+        </NextLink>
       </Card>
       <Box
         sx={{
