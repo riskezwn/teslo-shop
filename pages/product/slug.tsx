@@ -4,7 +4,8 @@ import {
 } from '@mui/material';
 import { ShopLayout } from '../../components/layouts';
 import initialData from '../../database/products';
-import { ProductSlideshow } from '../../components/products';
+import { ProductSlideshow, SizeSelector } from '../../components/products';
+import { ItemCounter } from '../../components/ui';
 
 const product = initialData.products[0];
 
@@ -29,7 +30,8 @@ const ProductPage = () => (
           }}
           >
             <Typography variant="subtitle2">Quantity</Typography>
-            {/* ItemCounter */}
+            <ItemCounter />
+            <SizeSelector sizes={product.sizes} />
           </Box>
 
           {/* Add to cart */}
