@@ -7,7 +7,7 @@ import { CartList, OrderSummary } from '../../components/cart';
 
 const CartPage = () => (
   <ShopLayout title="Cart - 3" pageDescription="Your shopping cart">
-    <Typography variant="h1" component="h1" marginBottom={3}>Shopping cart</Typography>
+    <Typography variant="h1" component="h1" marginBottom={5}>Shopping cart</Typography>
 
     <Grid container>
       <Grid item xs={12} sm={7}>
