@@ -14,5 +14,6 @@ export interface IProduct {
   title: string;
   type: IType;
   gender: IGender;
-  // TODO: createdAt and updatedAt
+  createdAt: string;
+  updatedAt: string;
 }
