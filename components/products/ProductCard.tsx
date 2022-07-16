@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box, Card, CardActionArea, CardMedia, Grid, Typography,
@@ -11,6 +11,13 @@ interface Props {
 
 export const ProductCard: FC<Props> = ({ product }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  const productImage = useMemo(() => (
+    isHovered
+      ? `products/${product.images[1]}`
+      : `products/${product.images[0]}`
+  ), [isHovered, product.images]);
 
   return (
     <Grid
@@ -23,30 +30,20 @@ export const ProductCard: FC<Props> = ({ product }) => {
       <Card>
         <NextLink href="/product/slug" passHref prefetch={false}>
           <CardActionArea>
-            {
-              isHovered
-                ? (
-                  <CardMedia
-                    component="img"
-                    image={`products/${product.images[1]}`}
-                    alt={product.title}
-                    className="fadeIn"
-                  />
-                )
-                : (
-                  <CardMedia
-                    component="img"
-                    image={`products/${product.images[0]}`}
-                    className="fadeIn"
-                  />
-                )
-            }
+            <CardMedia
+              component="img"
+              image={productImage}
+              alt={product.title}
+              className="fadeIn"
+              onLoad={() => setIsImageLoaded(true)}
+            />
           </CardActionArea>
         </NextLink>
       </Card>
       <Box
         sx={{
           mt: 1,
+          display: isImageLoaded ? 'block' : 'none',
         }}
         className="fadeIn"
       >
