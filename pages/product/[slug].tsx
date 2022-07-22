@@ -1,5 +1,5 @@
 import React from 'react';
-import { NextPage, GetServerSideProps } from 'next';
+import { NextPage, GetStaticPaths, GetStaticProps } from 'next';
 import {
   Box, Button, Grid, Typography,
 } from '@mui/material';
@@ -7,10 +7,7 @@ import { ShopLayout } from '../../components/layouts';
 import { ProductSlideshow, SizeSelector } from '../../components/products';
 import { ItemCounter } from '../../components/ui';
 import { IProduct } from '../../interfaces';
-
-// You should use getServerSideProps when:
-// - Only if you need to pre-render a page whose data must be fetched at request time
-import { dbProducts } from '../../database';
+import { getAllProductSlugs, getProductBySlug } from '../../database/dbProducts';
 
 interface Props {
   product: IProduct
@@ -59,7 +56,7 @@ const ProductPage: NextPage<Props> = ({ product }) => (
   </ShopLayout>
 );
 
-export const getServerSideProps: GetServerSideProps = async ({ params }) => {
+/* export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   const { slug } = params as { slug: string };
   const product = await dbProducts.getProductBySlug(slug);
 
@@ -76,6 +73,39 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     props: {
       product,
     },
+  };
+}; */
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const data = await getAllProductSlugs();
+  const slugs = data.map(({ slug }) => slug);
+
+  return {
+    paths: slugs.map((slug) => ({
+      params: { slug },
+    })),
+    fallback: 'blocking',
+  };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { slug } = params as { slug: string };
+  const product = await getProductBySlug(slug);
+
+  if (!product) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      product,
+    },
+    revalidate: 60 * 60 * 24,
   };
 };
 
