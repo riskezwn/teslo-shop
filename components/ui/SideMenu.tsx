@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   Box,
   Divider,
@@ -32,9 +32,16 @@ export const SideMenu = () => {
   const router = useRouter();
   const { isMenuOpen, toggleSideMenu } = useContext(UIContext);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
   const navigateTo = (url: string) => {
     toggleSideMenu();
     router.push(url);
+  };
+
+  const onSearchTerm = () => {
+    if (searchTerm.trim().length === 0) return;
+    navigateTo(`/search/${searchTerm}`);
   };
 
   return (
@@ -48,11 +55,16 @@ export const SideMenu = () => {
         <List>
           <ListItem>
             <Input
+              autoFocus
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyUp={(e) => (e.key === 'Enter' ? onSearchTerm() : null)}
               type="text"
               placeholder="Search..."
               endAdornment={(
                 <InputAdornment position="end">
                   <IconButton
+                    onClick={onSearchTerm}
                     aria-label="toggle password visibility"
                   >
                     <SearchOutlined />
