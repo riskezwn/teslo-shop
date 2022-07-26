@@ -1,7 +1,7 @@
 import React from 'react';
 import { NextPage, GetStaticPaths, GetStaticProps } from 'next';
 import {
-  Box, Button, Grid, Typography,
+  Box, Button, Chip, Grid, Typography,
 } from '@mui/material';
 import { ShopLayout } from '../../components/layouts';
 import { ProductSlideshow, SizeSelector } from '../../components/products';
@@ -39,8 +39,15 @@ const ProductPage: NextPage<Props> = ({ product }) => (
           </Box>
 
           {/* Add to cart */}
-          <Button color="secondary" className="circular-btn">Add to cart</Button>
-          {/* <Chip label="Out of stock" color="error" variant="outlined" /> */}
+          {
+            (product.inStock > 0)
+              ? (
+                <Button color="secondary" className="circular-btn">Add to cart</Button>
+              )
+              : (
+                <Chip label="Out of stock" color="error" variant="outlined" />
+              )
+          }
 
           {/* Description */}
           <Box sx={{
