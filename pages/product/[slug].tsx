@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { NextPage, GetStaticPaths, GetStaticProps } from 'next';
+import { useRouter } from 'next/router';
 import {
   Box, Button, Chip, Grid, Typography,
 } from '@mui/material';
@@ -10,12 +11,16 @@ import { ItemCounter } from '../../components/ui';
 import { IProduct, ICartProduct } from '../../interfaces';
 import { getAllProductSlugs, getProductBySlug } from '../../database/dbProducts';
 import { ISize } from '../../interfaces/products';
+import { CartContext } from '../../context';
 
 interface Props {
   product: IProduct
 }
 
 const ProductPage: NextPage<Props> = ({ product }) => {
+  const router = useRouter();
+  const { addProductToCart } = useContext(CartContext);
+
   const [tempCardProduct, setTempCardProduct] = useState<ICartProduct>({
     _id: product._id,
     images: product.images[0],
@@ -42,7 +47,10 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   };
 
   const onAddProduct = () => {
-    console.log({ tempCardProduct });
+    if (!tempCardProduct.size) return;
+
+    addProductToCart(tempCardProduct);
+    router.push('/cart');
   };
 
   return (
