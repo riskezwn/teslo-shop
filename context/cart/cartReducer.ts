@@ -10,6 +10,7 @@ export const cartReducer = (state: CartState, action: CartActionType): CartState
     case '[Cart] Load cart':
       return {
         ...state,
+        cart: action.payload,
       };
     case '[Cart] Update cart':
       return {

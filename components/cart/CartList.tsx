@@ -1,27 +1,22 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import NextLink from 'next/link';
 import {
   Typography, Grid, Link, CardActionArea, CardMedia, Box, Button,
 } from '@mui/material';
-import initialData from '../../database/products';
 import { ItemCounter } from '../ui';
-
-const productsInCart = [
-  initialData.products[0],
-  initialData.products[1],
-  initialData.products[2],
-  initialData.products[3],
-  initialData.products[4],
-];
+import { CartContext } from '../../context';
 
 interface Props {
   editable?: boolean
 }
 
-export const CartList: FC<Props> = ({ editable = false }) => (
-  <>
-    {
-      productsInCart.map((product) => (
+export const CartList: FC<Props> = ({ editable = false }) => {
+  const { cart } = useContext(CartContext);
+
+  return (
+    <>
+      {
+      cart.map((product) => (
         <Grid
           container
           spacing={2}
@@ -32,11 +27,11 @@ export const CartList: FC<Props> = ({ editable = false }) => (
           }}
         >
           <Grid item xs={2}>
-            <NextLink href="/product/slug" passHref>
-              <Link href="/product/slug">
+            <NextLink href={`/product/${product.slug}`} passHref>
+              <Link href={`/product/${product.slug}`}>
                 <CardActionArea>
                   <CardMedia
-                    image={`/products/${product.images[0]}`}
+                    image={`/products/${product.image}`}
                     component="img"
                     sx={{ borderRadius: '5px' }}
                   />
@@ -50,12 +45,24 @@ export const CartList: FC<Props> = ({ editable = false }) => (
               <Typography variant="body2">
                 Size:
                 {' '}
-                <strong>M</strong>
+                <strong>{product.size}</strong>
               </Typography>
               {
                 editable
-                  ? <ItemCounter />
-                  : <Typography variant="h6">x 3</Typography>
+                  ? (
+                    <ItemCounter
+                      currentValue={product.quantity}
+                      maxValue={10}
+                      updatedQuantity={() => {}}
+                    />
+                  )
+                  : (
+                    <Typography variant="h6">
+                      x
+                      {' '}
+                      {product.quantity}
+                    </Typography>
+                  )
               }
             </Box>
           </Grid>
@@ -67,7 +74,7 @@ export const CartList: FC<Props> = ({ editable = false }) => (
             flexDirection="column"
           >
             <Typography variant="subtitle1">
-              {product.price}
+              {product.price * product.quantity}
               {' '}
               €
             </Typography>
@@ -82,7 +89,8 @@ export const CartList: FC<Props> = ({ editable = false }) => (
         </Grid>
       ))
     }
-  </>
-);
+    </>
+  );
+};
 
 export default CartList;

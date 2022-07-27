@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 import React, {
-  FC, ReactNode, useMemo, useReducer,
+  FC, ReactNode, useEffect, useMemo, useReducer, useRef,
 } from 'react';
+import Cookie from 'js-cookie';
 import { CartContext, cartReducer } from '.';
 import { ICartProduct } from '../../interfaces';
 
@@ -19,6 +20,33 @@ const CART_INITIAL_STATE: CartState = {
 
 export const CartProvider:FC<Props> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, CART_INITIAL_STATE);
+
+  useEffect(() => {
+    try {
+      const productsInCookies = Cookie.get('cart')
+        ? JSON.parse(Cookie.get('cart')!)
+        : [];
+      dispatch({
+        type: '[Cart] Load cart',
+        payload: productsInCookies,
+      });
+    } catch (error) {
+      dispatch({
+        type: '[Cart] Load cart',
+        payload: [],
+      });
+    }
+  }, []);
+
+  const isCartReloading = useRef(true);
+
+  useEffect(() => {
+    if (isCartReloading.current) {
+      isCartReloading.current = false;
+    } else {
+      Cookie.set('cart', JSON.stringify(state.cart));
+    }
+  }, [state.cart]);
 
   const addProductToCart = (product: ICartProduct) => {
     const productInCart = state.cart.some((p) => p._id === product._id);
