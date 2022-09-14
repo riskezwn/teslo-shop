@@ -83,8 +83,20 @@ export const CartProvider:FC<Props> = ({ children }) => {
     });
   };
 
-  const cartProviderValue = useMemo(() => (
-    { ...state, addProductToCart }), [state, addProductToCart]);
+  const updateCartQuantity = (product: ICartProduct) => {
+    dispatch({ type: '[Cart] Update product cart quantity', payload: product });
+  };
+
+  const removeCartProduct = (product: ICartProduct) => {
+    dispatch({ type: '[Cart] Remove product cart', payload: product });
+  };
+
+  const cartProviderValue = useMemo(
+    () => ({
+      ...state, addProductToCart, updateCartQuantity, removeCartProduct,
+    }),
+    [state, addProductToCart, updateCartQuantity, removeCartProduct],
+  );
 
   return (
     <CartContext.Provider value={cartProviderValue}>

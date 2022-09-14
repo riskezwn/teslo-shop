@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import React, { FC, useContext } from 'react';
 import NextLink from 'next/link';
 import {
@@ -5,13 +6,23 @@ import {
 } from '@mui/material';
 import { ItemCounter } from '../ui';
 import { CartContext } from '../../context';
+import { ICartProduct } from '../../interfaces/cart';
 
 interface Props {
   editable?: boolean
 }
 
 export const CartList: FC<Props> = ({ editable = false }) => {
-  const { cart } = useContext(CartContext);
+  const { cart, updateCartQuantity, removeCartProduct } = useContext(CartContext);
+
+  const onNewCartQuantityValue = (product: ICartProduct, newQuantityValue: number) => {
+    product.quantity = newQuantityValue;
+    updateCartQuantity(product);
+  };
+
+  const onCartProductRemove = (product: ICartProduct) => {
+    removeCartProduct(product);
+  };
 
   return (
     <>
@@ -21,7 +32,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
           container
           spacing={2}
           alignItems="center"
-          key={product.slug}
+          key={product.slug + product.size}
           sx={{
             mb: 1,
           }}
@@ -53,7 +64,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
                     <ItemCounter
                       currentValue={product.quantity}
                       maxValue={10}
-                      updatedQuantity={() => {}}
+                      updatedQuantity={(value) => onNewCartQuantityValue(product, value)}
                     />
                   )
                   : (
@@ -80,7 +91,7 @@ export const CartList: FC<Props> = ({ editable = false }) => {
             </Typography>
             {
               editable && (
-                <Button variant="text" color="secondary">
+                <Button variant="text" color="secondary" onClick={() => onCartProductRemove(product)}>
                   Remove
                 </Button>
               )
