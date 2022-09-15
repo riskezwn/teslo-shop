@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { createContext } from 'react';
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, IOrderSummary } from '../../interfaces';
 
 interface ContextProps {
   cart: ICartProduct[];
+  orderSummary: IOrderSummary;
   addProductToCart: (product: ICartProduct) => void;
   updateCartQuantity: (product: ICartProduct) => void;
   removeCartProduct: (product: ICartProduct) => void;

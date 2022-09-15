@@ -1,10 +1,11 @@
+/* eslint-disable max-len */
 /* eslint-disable no-underscore-dangle */
 import React, {
   FC, ReactNode, useEffect, useMemo, useReducer, useRef,
 } from 'react';
 import Cookie from 'js-cookie';
 import { CartContext, cartReducer } from '.';
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, IOrderSummary } from '../../interfaces';
 
 interface Props {
   children: ReactNode
@@ -12,10 +13,17 @@ interface Props {
 
 export interface CartState {
   cart: ICartProduct[]
+  orderSummary: IOrderSummary
 }
 
 const CART_INITIAL_STATE: CartState = {
   cart: [],
+  orderSummary: {
+    numberOfItems: 0,
+    subTotal: 0,
+    tax: 0,
+    total: 0,
+  },
 };
 
 export const CartProvider:FC<Props> = ({ children }) => {
@@ -46,6 +54,20 @@ export const CartProvider:FC<Props> = ({ children }) => {
     } else {
       Cookie.set('cart', JSON.stringify(state.cart));
     }
+  }, [state.cart]);
+
+  useEffect(() => {
+    const numberOfItems = state.cart.reduce((prev, current) => current.quantity + prev, 0);
+    const subTotal = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0);
+    const taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0);
+
+    const orderSummary: IOrderSummary = {
+      numberOfItems,
+      subTotal,
+      tax: subTotal * taxRate,
+      total: subTotal * (taxRate + 1),
+    };
+    dispatch({ type: '[Cart] Update order summary', payload: orderSummary });
   }, [state.cart]);
 
   const addProductToCart = (product: ICartProduct) => {

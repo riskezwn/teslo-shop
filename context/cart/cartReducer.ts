@@ -1,12 +1,13 @@
 /* eslint-disable max-len */
 import { CartState } from '.';
-import { ICartProduct } from '../../interfaces';
+import { ICartProduct, IOrderSummary } from '../../interfaces';
 
 type CartActionType =
   | { type: '[Cart] Load cart', payload: ICartProduct[] }
   | { type: '[Cart] Update cart', payload: ICartProduct[] }
   | { type: '[Cart] Update product cart quantity', payload: ICartProduct }
   | { type: '[Cart] Remove product cart', payload: ICartProduct }
+  | { type: '[Cart] Update order summary', payload: IOrderSummary }
 
 export const cartReducer = (state: CartState, action: CartActionType): CartState => {
   switch (action.type) {
@@ -33,7 +34,11 @@ export const cartReducer = (state: CartState, action: CartActionType): CartState
       return {
         ...state,
         cart: state.cart.filter((product) => !(product._id === action.payload._id && product.size === action.payload.size)),
-
+      };
+    case '[Cart] Update order summary':
+      return {
+        ...state,
+        orderSummary: action.payload,
       };
     default:
       return state;
