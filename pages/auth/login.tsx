@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import {
   Box, Button, Chip, Grid, Link, TextField, Typography,
 } from '@mui/material';
-import { Error } from '@mui/icons-material';
+import { ErrorOutline } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
@@ -33,9 +33,9 @@ export const LoginPage = () => {
       console.log({ token, user });
     } catch (error) {
       setShowError(true);
-      setIsButtonDisabled(false);
       setTimeout(() => {
         setShowError(false);
+        setIsButtonDisabled(false);
       }, 3000);
     }
   };
@@ -54,7 +54,7 @@ export const LoginPage = () => {
               <Chip
                 label="Email or password does not match"
                 color="error"
-                icon={<Error />}
+                icon={<ErrorOutline />}
                 className="fadeIn"
                 sx={{
                   my: 1,
