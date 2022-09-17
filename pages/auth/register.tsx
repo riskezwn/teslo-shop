@@ -1,14 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box, Button, Chip, Grid, Link, TextField, Typography,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { ErrorOutline } from '@mui/icons-material';
+import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
-import { tesloApi } from '../../api';
+import { AuthContext } from '../../context';
 
 type FormData = {
   email: string,
@@ -18,6 +19,9 @@ type FormData = {
 }
 
 export const RegisterPage = () => {
+  const router = useRouter();
+  const { registerUser } = useContext(AuthContext);
+
   const {
     register, handleSubmit, formState: { errors }, watch,
   } = useForm<FormData>();
@@ -27,19 +31,19 @@ export const RegisterPage = () => {
   const onRegister = async ({ email, name, password }: FormData) => {
     setShowError(false);
     setIsButtonDisabled(true);
+    const { hasError } = await registerUser(email, password, name);
 
-    try {
-      const { data } = await tesloApi.post('/auth/register', { email, password, name });
-      const { token, user } = data;
-      setIsButtonDisabled(false);
-      console.log({ token, user });
-    } catch (error) {
+    if (hasError) {
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
         setIsButtonDisabled(false);
       }, 3000);
+      return;
     }
+
+    setIsButtonDisabled(false);
+    router.replace('/');
   };
 
   return (

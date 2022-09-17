@@ -1,14 +1,15 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import NextLink from 'next/link';
 import {
   Box, Button, Chip, Grid, Link, TextField, Typography,
 } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
-import { tesloApi } from '../../api';
+import { AuthContext } from '../../context';
 
 type FormData = {
   email: string,
@@ -16,6 +17,9 @@ type FormData = {
 }
 
 export const LoginPage = () => {
+  const router = useRouter();
+  const { loginUser } = useContext(AuthContext);
+
   const {
     register, handleSubmit, formState: { errors },
   } = useForm<FormData>();
@@ -26,18 +30,19 @@ export const LoginPage = () => {
     setShowError(false);
     setIsButtonDisabled(true);
 
-    try {
-      const { data } = await tesloApi.post('/auth/login', { email, password });
-      const { token, user } = data;
-      setIsButtonDisabled(false);
-      console.log({ token, user });
-    } catch (error) {
+    const isValidLogin = await loginUser(email, password);
+
+    if (!isValidLogin) {
       setShowError(true);
       setTimeout(() => {
         setShowError(false);
         setIsButtonDisabled(false);
       }, 3000);
+      return;
     }
+
+    setIsButtonDisabled(false);
+    router.replace('/');
   };
 
   return (
