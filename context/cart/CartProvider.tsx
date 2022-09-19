@@ -12,11 +12,13 @@ interface Props {
 }
 
 export interface CartState {
+  isLoaded: boolean
   cart: ICartProduct[]
   orderSummary: IOrderSummary
 }
 
 const CART_INITIAL_STATE: CartState = {
+  isLoaded: false,
   cart: [],
   orderSummary: {
     numberOfItems: 0,

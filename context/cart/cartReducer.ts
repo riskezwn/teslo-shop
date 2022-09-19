@@ -15,6 +15,7 @@ export const cartReducer = (state: CartState, action: CartActionType): CartState
       return {
         ...state,
         cart: action.payload,
+        isLoaded: true,
       };
     case '[Cart] Update cart':
       return {

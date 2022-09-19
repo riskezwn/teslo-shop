@@ -6,7 +6,6 @@ import {
   AppBar, Avatar, Badge, Box, Button, IconButton, Input, InputAdornment, Link, Toolbar, Typography,
 } from '@mui/material';
 import { ClearOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material';
-import { blue } from '@mui/material/colors';
 import { AuthContext, CartContext, UIContext } from '../../context';
 
 export const Navbar = () => {
@@ -144,7 +143,7 @@ export const Navbar = () => {
         <Button onClick={toggleSideMenu}>Menu</Button>
         {
           isLogged && user && (
-            <Avatar sx={{ width: 35, height: 35, bgcolor: blue[700] }}>{user.name[0]}</Avatar>
+            <Avatar sx={{ width: 35, height: 35, bgcolor: 'secondary.main' }}>{user.name[0]}</Avatar>
           )
         }
       </Toolbar>
