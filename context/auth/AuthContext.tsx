@@ -8,6 +8,7 @@ export interface ContextProps {
   user?: IUser;
   loginUser: (email: string, password: string) => Promise<boolean>;
   registerUser: (email: string, password: string, name: string) => Promise<RegisterResponse>;
+  logoutUser: () => void;
 }
 
 export const AuthContext = createContext({} as ContextProps);

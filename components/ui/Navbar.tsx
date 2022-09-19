@@ -3,13 +3,15 @@ import React, { useContext, useState } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import {
-  AppBar, Badge, Box, Button, IconButton, Input, InputAdornment, Link, Toolbar, Typography,
+  AppBar, Avatar, Badge, Box, Button, IconButton, Input, InputAdornment, Link, Toolbar, Typography,
 } from '@mui/material';
 import { ClearOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material';
-import { CartContext, UIContext } from '../../context';
+import { blue } from '@mui/material/colors';
+import { AuthContext, CartContext, UIContext } from '../../context';
 
 export const Navbar = () => {
   const { asPath, push } = useRouter();
+  const { isLogged, user } = useContext(AuthContext);
   const { toggleSideMenu } = useContext(UIContext);
   const { orderSummary } = useContext(CartContext);
 
@@ -140,6 +142,11 @@ export const Navbar = () => {
           </Link>
         </NextLink>
         <Button onClick={toggleSideMenu}>Menu</Button>
+        {
+          isLogged && user && (
+            <Avatar sx={{ width: 35, height: 35, bgcolor: blue[700] }}>{user.name[0]}</Avatar>
+          )
+        }
       </Toolbar>
     </AppBar>
   );
