@@ -94,10 +94,6 @@ export const LoginPage = () => {
                 {
                   ...register('password', {
                     required: 'Password is required',
-                    minLength: {
-                      value: 6,
-                      message: 'Password must contain at least 6 characters',
-                    },
                   })
                 }
                 error={!!errors.password}

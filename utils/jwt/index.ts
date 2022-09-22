@@ -25,6 +25,10 @@ export const isValidToken = (token:string): Promise<string> => {
     throw new Error('No JWT seed');
   }
 
+  if (token.length <= 10) {
+    return Promise.reject(new Error('JWT not valid'));
+  }
+
   return new Promise((resolve, reject) => {
     try {
       // eslint-disable-next-line consistent-return

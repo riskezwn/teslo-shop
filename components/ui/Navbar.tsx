@@ -5,7 +5,10 @@ import { useRouter } from 'next/router';
 import {
   AppBar, Avatar, Badge, Box, Button, IconButton, Input, InputAdornment, Link, Toolbar, Typography,
 } from '@mui/material';
-import { ClearOutlined, SearchOutlined, ShoppingCartOutlined } from '@mui/icons-material';
+import {
+  ClearOutlined, SearchOutlined, ShoppingCartOutlined,
+} from '@mui/icons-material';
+import MenuIcon from '@mui/icons-material/Menu';
 import { AuthContext, CartContext, UIContext } from '../../context';
 
 export const Navbar = () => {
@@ -140,7 +143,9 @@ export const Navbar = () => {
             </IconButton>
           </Link>
         </NextLink>
-        <Button onClick={toggleSideMenu}>Menu</Button>
+        <IconButton onClick={toggleSideMenu}>
+          <MenuIcon />
+        </IconButton>
         {
           isLogged && user && (
             <Avatar sx={{ width: 35, height: 35, bgcolor: 'secondary.main' }}>{user.name[0]}</Avatar>
