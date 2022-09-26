@@ -17,3 +17,14 @@ export interface IOrderSummary {
   tax: number;
   total: number;
 }
+
+export interface IShippingAddress {
+  firstName: string;
+  lastName: string;
+  address: string;
+  addressAditional?: string;
+  zipCode: string;
+  city: string;
+  country: string;
+  phone: string;
+}

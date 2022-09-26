@@ -5,7 +5,7 @@ import React, {
 } from 'react';
 import Cookie from 'js-cookie';
 import { CartContext, cartReducer } from '.';
-import { ICartProduct, IOrderSummary } from '../../interfaces';
+import { ICartProduct, IOrderSummary, IShippingAddress } from '../../interfaces';
 
 interface Props {
   children: ReactNode
@@ -15,6 +15,7 @@ export interface CartState {
   isLoaded: boolean
   cart: ICartProduct[]
   orderSummary: IOrderSummary
+  shippingAddress?: IShippingAddress
 }
 
 const CART_INITIAL_STATE: CartState = {
@@ -26,6 +27,7 @@ const CART_INITIAL_STATE: CartState = {
     tax: 0,
     total: 0,
   },
+  shippingAddress: undefined,
 };
 
 export const CartProvider:FC<Props> = ({ children }) => {
@@ -44,6 +46,25 @@ export const CartProvider:FC<Props> = ({ children }) => {
       dispatch({
         type: '[Cart] Load cart',
         payload: [],
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Cookie.get('firstName')) {
+      const addressInCookies: IShippingAddress = {
+        firstName: Cookie.get('firstName') || '',
+        lastName: Cookie.get('lastName') || '',
+        address: Cookie.get('address') || '',
+        addressAditional: Cookie.get('addressAditional') || '',
+        zipCode: Cookie.get('zipCode') || '',
+        city: Cookie.get('city') || '',
+        country: Cookie.get('country') || '',
+        phone: Cookie.get('phone') || '',
+      };
+      dispatch({
+        type: '[Cart] Load address from cookies',
+        payload: addressInCookies,
       });
     }
   }, []);
@@ -115,11 +136,24 @@ export const CartProvider:FC<Props> = ({ children }) => {
     dispatch({ type: '[Cart] Remove product cart', payload: product });
   };
 
+  const updateAddress = (address: IShippingAddress) => {
+    Cookie.set('firstName', address.firstName);
+    Cookie.set('lastName', address.lastName);
+    Cookie.set('address', address.address);
+    Cookie.set('addressAditional', address.addressAditional || '');
+    Cookie.set('zipCode', address.zipCode);
+    Cookie.set('city', address.city);
+    Cookie.set('country', address.country);
+    Cookie.set('phone', address.phone);
+
+    dispatch({ type: '[Cart] Update address', payload: address });
+  };
+
   const cartProviderValue = useMemo(
     () => ({
-      ...state, addProductToCart, updateCartQuantity, removeCartProduct,
+      ...state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress,
     }),
-    [state, addProductToCart, updateCartQuantity, removeCartProduct],
+    [state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress],
   );
 
   return (
