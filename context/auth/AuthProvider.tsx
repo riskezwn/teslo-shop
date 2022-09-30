@@ -4,7 +4,7 @@ import React, {
   FC, ReactNode, useEffect, useMemo, useReducer,
 } from 'react';
 import axios, { AxiosError } from 'axios';
-import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 import { AuthContext, authReducer } from '.';
 import { tesloApi } from '../../api';
 import { IUser } from '../../interfaces';
@@ -29,26 +29,31 @@ const AUTH_INITIAL_STATE: AuthState = {
 };
 
 export const AuthProvider:FC<Props> = ({ children }) => {
+  const { data: authData, status } = useSession();
   const [state, dispatch] = useReducer(authReducer, AUTH_INITIAL_STATE);
-  const { reload } = useRouter();
-
-  const checkToken = async () => {
-    if (!Cookies.get('token')) return false;
-    try {
-      const { data } = await tesloApi.get('/auth/token');
-      const { token, user } = data;
-      Cookies.set('token', token);
-      dispatch({ type: '[Auth] Login', payload: user });
-      return true;
-    } catch (error) {
-      Cookies.remove('token');
-      return false;
-    }
-  };
 
   useEffect(() => {
-    checkToken();
-  }, []);
+    if (status === 'authenticated') {
+      dispatch({ type: '[Auth] Login', payload: authData.user as IUser });
+    }
+  }, [status, authData]);
+
+  // const checkToken = async () => {
+  //   if (!Cookies.get('token')) return false;
+  //   try {
+  //     const { data } = await tesloApi.get('/auth/token');
+  //     const { token, user } = data;
+  //     Cookies.set('token', token);
+
+  //     return true;
+  //   } catch (error) {
+  //     Cookies.remove('token');
+  //     return false;
+  //   }
+  // };
+  // useEffect(() => {
+  //   checkToken();
+  // }, []);
 
   const loginUser = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -89,7 +94,6 @@ export const AuthProvider:FC<Props> = ({ children }) => {
   };
 
   const logoutUser = () => {
-    Cookies.remove('token');
     Cookies.remove('cart');
     Cookies.remove('firstName');
     Cookies.remove('lastName');
@@ -99,7 +103,8 @@ export const AuthProvider:FC<Props> = ({ children }) => {
     Cookies.remove('city');
     Cookies.remove('country');
     Cookies.remove('phone');
-    reload();
+
+    signOut();
   };
 
   const authProviderValue = useMemo(
