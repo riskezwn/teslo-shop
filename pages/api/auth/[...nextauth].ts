@@ -29,9 +29,12 @@ export const authOptions: NextAuthOptions = {
       }
       if (account) {
         switch (account.type) {
-          case 'oauth':
-            // TODO: crear usuario o verificar si existe en DB
+          case 'oauth': {
+            const dbUser = await dbUsers.checkOAuthToUser(user?.email || '', user?.name || '');
+            token.user = dbUser;
+            token.role = dbUser.role;
             break;
+          }
           case 'credentials':
             if (user?.role) {
               token.user = user;
