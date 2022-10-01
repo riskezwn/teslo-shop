@@ -6,11 +6,12 @@ import { getSession, signIn, getProviders } from 'next-auth/react';
 import {
   Box, Button, Chip, Divider, Grid, Link, TextField, Typography,
 } from '@mui/material';
-import { ErrorOutline, Google } from '@mui/icons-material';
+import { ErrorOutline } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
+import GoogleLoginButton from '../../components/ui/social/GoogleLoginButton';
 
 type FormData = {
   email: string,
@@ -119,32 +120,16 @@ export const LoginPage = () => {
               <Divider sx={{ width: '100%', mb: 2 }} />
               {
                 Object.values(providers).map((provider: any) => {
-                  if (provider.id === 'credentials') return (<div key="provider.id" />);
-
-                  let startIcon = null;
                   switch (provider.id) {
+                    case 'credentials':
+                      return (<div key="provider.id" />);
                     case 'google':
-                      startIcon = <Google />;
-                      break;
+                      return (
+                        <GoogleLoginButton />
+                      );
                     default:
-                      break;
+                      return (<div key="provider.id" />);
                   }
-
-                  return (
-                    <Button
-                      key={provider.id}
-                      variant="outlined"
-                      color="primary"
-                      startIcon={startIcon}
-                      fullWidth
-                      sx={{ mb: 1 }}
-                      onClick={() => signIn(provider.id)}
-                    >
-                      Iniciar sesión con
-                      {' '}
-                      {provider.name}
-                    </Button>
-                  );
                 })
               }
             </Grid>
