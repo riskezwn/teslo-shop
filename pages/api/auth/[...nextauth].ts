@@ -21,7 +21,17 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  // Custom pages
+  pages: {
+    signIn: '/auth/login',
+    newUser: '/auth/register',
+  },
   // Callbacks
+  session: {
+    maxAge: 2592000, // 30 days
+    strategy: 'jwt',
+    updateAge: 86400, // daily
+  },
   callbacks: {
     async jwt({ token, account, user }) {
       if (account?.access_token) {

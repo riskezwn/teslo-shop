@@ -1,15 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useContext, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
+import { getSession, signIn, getProviders } from 'next-auth/react';
 import {
-  Box, Button, Chip, Grid, Link, TextField, Typography,
+  Box, Button, Chip, Divider, Grid, Link, TextField, Typography,
 } from '@mui/material';
-import { ErrorOutline } from '@mui/icons-material';
+import { ErrorOutline, Google } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
-import { AuthContext } from '../../context';
 
 type FormData = {
   email: string,
@@ -17,33 +18,31 @@ type FormData = {
 }
 
 export const LoginPage = () => {
-  const router = useRouter();
-  const destination = router.query.p?.toString() || '/';
-  const { loginUser } = useContext(AuthContext);
+  const { query } = useRouter();
+
+  const destination = query.p?.toString() || '/';
 
   const {
     register, handleSubmit, formState: { errors },
   } = useForm<FormData>();
   const [showError, setShowError] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [providers, setProviders] = useState<any>({});
+
+  useEffect(() => {
+    if (query.error) {
+      setShowError(true);
+    }
+    getProviders().then((prov) => {
+      setProviders(prov);
+    });
+  }, []);
 
   const onLogin = async ({ email, password }: FormData) => {
     setShowError(false);
-    setIsButtonDisabled(true);
 
-    const isValidLogin = await loginUser(email, password);
-
-    if (!isValidLogin) {
-      setShowError(true);
-      setTimeout(() => {
-        setShowError(false);
-        setIsButtonDisabled(false);
-      }, 3000);
-      return;
-    }
-
-    setIsButtonDisabled(false);
-    router.replace(destination);
+    await signIn('credentials', {
+      email, password,
+    });
   };
 
   return (
@@ -107,7 +106,6 @@ export const LoginPage = () => {
                 className="circular-btn"
                 size="large"
                 fullWidth
-                disabled={isButtonDisabled}
               >
                 Log in
               </Button>
@@ -117,11 +115,62 @@ export const LoginPage = () => {
                 <Link href={`/auth/register?p=${destination}`} underline="always">Don&apos;t have an account yet?</Link>
               </NextLink>
             </Grid>
+            <Grid item xs={12} display="flex" flexDirection="column" justifyContent="end">
+              <Divider sx={{ width: '100%', mb: 2 }} />
+              {
+                Object.values(providers).map((provider: any) => {
+                  if (provider.id === 'credentials') return (<div key="provider.id" />);
+
+                  let startIcon = null;
+                  switch (provider.id) {
+                    case 'google':
+                      startIcon = <Google />;
+                      break;
+                    default:
+                      break;
+                  }
+
+                  return (
+                    <Button
+                      key={provider.id}
+                      variant="outlined"
+                      color="primary"
+                      startIcon={startIcon}
+                      fullWidth
+                      sx={{ mb: 1 }}
+                      onClick={() => signIn(provider.id)}
+                    >
+                      Iniciar sesión con
+                      {' '}
+                      {provider.name}
+                    </Button>
+                  );
+                })
+              }
+            </Grid>
           </Grid>
         </Box>
       </form>
     </AuthLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+  const session = await getSession({ req });
+  const { p = '/' } = query;
+
+  if (session) {
+    return {
+      redirect: {
+        destination: p.toString(),
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
 };
 
 export default LoginPage;
