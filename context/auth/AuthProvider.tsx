@@ -57,7 +57,7 @@ export const AuthProvider:FC<Props> = ({ children }) => {
 
   const loginUser = async (email: string, password: string): Promise<boolean> => {
     try {
-      const { data } = await tesloApi.post('/auth/login', { email, password });
+      const { data } = await tesloApi.post('/user/login', { email, password });
       const { token, user } = data;
       Cookies.set('token', token);
       dispatch({ type: '[Auth] Login', payload: user });
@@ -69,7 +69,7 @@ export const AuthProvider:FC<Props> = ({ children }) => {
 
   const registerUser = async (email: string, password: string, name: string): Promise<RegisterResponse> => {
     try {
-      const { data } = await tesloApi.post('/auth/register', { email, password, name });
+      const { data } = await tesloApi.post('/user/register', { email, password, name });
       const { token, user } = data;
       Cookies.set('token', token);
       dispatch({ type: '[Auth] Login', payload: user });
