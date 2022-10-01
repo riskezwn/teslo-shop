@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { signIn, getProviders } from 'next-auth/react';
 // eslint-disable-next-line camelcase
-import { unstable_getServerSession } from 'next-auth/next';
+import { unstable_getServerSession } from 'next-auth';
 import {
   Box, Button, Chip, Divider, Grid, Link, TextField, Typography,
 } from '@mui/material';
@@ -14,7 +14,6 @@ import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
 import GoogleLoginButton from '../../components/ui/social/GoogleLoginButton';
-import { } from 'next-auth';
 import { authOptions } from '../api/auth/[...nextauth]';
 
 type FormData = {

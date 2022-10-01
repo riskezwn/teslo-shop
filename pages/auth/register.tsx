@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { signIn } from 'next-auth/react';
 // eslint-disable-next-line camelcase
-import { unstable_getServerSession } from 'next-auth/next';
+import { unstable_getServerSession } from 'next-auth';
 import {
   Box, Button, Chip, Grid, Link, TextField, Typography,
 } from '@mui/material';
