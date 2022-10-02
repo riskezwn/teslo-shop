@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
-import { GetServerSideProps } from 'next';
+// import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { signIn, getProviders } from 'next-auth/react';
 // eslint-disable-next-line camelcase
-import { unstable_getServerSession } from 'next-auth';
+// import { unstable_getServerSession } from 'next-auth';
 import {
   Box, Button, Chip, Divider, Grid, Link, TextField, Typography,
 } from '@mui/material';
@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
 import GoogleLoginButton from '../../components/ui/social/GoogleLoginButton';
-import { authOptions } from '../api/auth/[...nextauth]';
+// import { authOptions } from '../api/auth/[...nextauth]';
 
 type FormData = {
   email: string,
@@ -143,22 +143,22 @@ export const LoginPage = () => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-  const session = await unstable_getServerSession(req, res, authOptions);
-  const { p = '/' } = query;
+// export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+//   const session = await unstable_getServerSession(req, res, authOptions);
+//   const { p = '/' } = query;
 
-  if (session) {
-    return {
-      redirect: {
-        destination: p.toString(),
-        permanent: false,
-      },
-    };
-  }
+//   if (session) {
+//     return {
+//       redirect: {
+//         destination: p.toString(),
+//         permanent: false,
+//       },
+//     };
+//   }
 
-  return {
-    props: {},
-  };
-};
+//   return {
+//     props: {},
+//   };
+// };
 
 export default LoginPage;
