@@ -18,7 +18,7 @@ const getAddressFromCookies = ():IShippingAddress => ({
   addressAditional: Cookies.get('addressAditional') || '',
   zipCode: Cookies.get('zipCode') || '',
   city: Cookies.get('city') || '',
-  country: Cookies.get('country') || '',
+  country: Cookies.get('country') || 'ES',
   phone: Cookies.get('phone') || '',
 });
 

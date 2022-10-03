@@ -10,7 +10,8 @@ export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
   if (req.url.includes('/checkout')) {
-    if (!session) {
+    const cart = req.cookies.get('cart');
+    if (!session || cart === '[]') {
       const { origin, pathname } = req.nextUrl;
       const url = `${origin}/auth/login?p=${pathname}`;
 
