@@ -2,13 +2,14 @@ import React from 'react';
 import type { AppProps } from 'next/app';
 import { SWRConfig } from 'swr';
 import { SessionProvider } from 'next-auth/react';
+import { Session } from 'next-auth';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { UIProvider, CartProvider, AuthProvider } from '../context';
 import { lightTheme } from '../themes';
 import '../styles/globals.css';
 
-const MyApp = ({ Component, pageProps }: AppProps) => (
-  <SessionProvider>
+const MyApp = ({ Component, pageProps }: AppProps<{ session: Session }>) => (
+  <SessionProvider session={pageProps.session}>
     <SWRConfig
       value={{
         fetcher: (resource, init) => fetch(resource, init).then((res) => res.json()),
