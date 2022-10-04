@@ -1,5 +1,5 @@
 import {
-  IUser, ISize, IShippingAddress, IOrderSummary,
+  IUser, ISize, IShippingAddress, IOrderSummary, IGender,
 } from '.';
 
 export interface IOrderItem {
@@ -10,10 +10,11 @@ export interface IOrderItem {
   slug: string;
   image: string;
   price: number;
+  gender: IGender;
 }
 
 export interface IOrder {
-  _id: string;
+  _id?: string;
   user?: IUser | string;
   orderItems: IOrderItem[];
   shippingAddress: IShippingAddress;

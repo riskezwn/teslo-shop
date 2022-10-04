@@ -5,7 +5,10 @@ import React, {
 } from 'react';
 import Cookie from 'js-cookie';
 import { CartContext, cartReducer } from '.';
-import { ICartProduct, IOrderSummary, IShippingAddress } from '../../interfaces';
+import {
+  ICartProduct, IOrder, IOrderSummary, IShippingAddress,
+} from '../../interfaces';
+import { tesloApi } from '../../api';
 
 interface Props {
   children: ReactNode
@@ -149,11 +152,33 @@ export const CartProvider:FC<Props> = ({ children }) => {
     dispatch({ type: '[Cart] Update address', payload: address });
   };
 
+  const createOrder = async () => {
+    if (!state.shippingAddress) {
+      throw new Error('Invalid shipping address');
+    }
+
+    const body: IOrder = {
+      orderItems: state.cart.map((p) => ({
+        ...p,
+        size: p.size!,
+      })),
+      shippingAddress: state.shippingAddress,
+      orderSummary: state.orderSummary,
+      isPaid: false,
+    };
+
+    try {
+      const { data } = await tesloApi.post('/orders', body);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
   const cartProviderValue = useMemo(
     () => ({
-      ...state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress,
+      ...state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress, createOrder,
     }),
-    [state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress],
+    [state, addProductToCart, updateCartQuantity, removeCartProduct, updateAddress, createOrder],
   );
 
   return (
