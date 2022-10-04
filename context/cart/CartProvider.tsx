@@ -8,7 +8,7 @@ import { CartContext, cartReducer } from '.';
 import {
   ICartProduct, IOrder, IOrderSummary, IShippingAddress,
 } from '../../interfaces';
-import { tesloApi } from '../../api';
+import { tesloApi } from '../../api_base';
 
 interface Props {
   children: ReactNode

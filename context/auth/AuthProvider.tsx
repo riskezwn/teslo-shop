@@ -6,7 +6,7 @@ import React, {
 import axios, { AxiosError } from 'axios';
 import { useSession, signOut } from 'next-auth/react';
 import { AuthContext, authReducer } from '.';
-import { tesloApi } from '../../api';
+import { tesloApi } from '../../api_base';
 import { IUser } from '../../interfaces';
 
 interface Props {
