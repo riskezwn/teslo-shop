@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '../../../database';
 import { User } from '../../../models';
-import { jwt } from '../../../utils';
 
 type Data =
   | { message: string }
@@ -15,11 +14,11 @@ type Data =
   }
 
 const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  const { token = '' } = req.cookies;
+  // const { token = '' } = req.cookies;
   let userId = '';
 
   try {
-    userId = await jwt.isValidToken(token);
+    userId = 'gufygfyfy';
   } catch (error) {
     return res.status(200).json({
       message: 'Invalid authorization token',
@@ -37,11 +36,11 @@ const checkJWT = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }
 
   const {
-    _id, email, role, name,
+    email, role, name,
   } = user;
 
   return res.status(200).json({
-    token: jwt.signToken(_id, email),
+    token: '',
     user: {
       email,
       role,
