@@ -27,6 +27,10 @@ export const authOptions = {
     }),
     // ...add more providers here
   ],
+  pages: {
+    signIn: '/auth/login',
+    newUser: '/auth/register',
+  },
   callbacks: {
     async jwt({ token, account, user }: any) {
       if (account?.access_token) {

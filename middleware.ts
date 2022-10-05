@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export const config = {
-  matcher: '/checkout/:path*',
+  matcher: ['/checkout/:path*', '/auth/:path*'],
 };
 
 export async function middleware(req: NextRequest) {
@@ -14,6 +14,16 @@ export async function middleware(req: NextRequest) {
     if (!session || cart === '[]') {
       const { origin, pathname } = req.nextUrl;
       const url = `${origin}/auth/login?p=${pathname}`;
+
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
+  if (req.url.includes('/auth')) {
+    if (session) {
+      const { origin } = req.nextUrl;
+      const url = `${origin}/`;
 
       return NextResponse.redirect(url);
     }
