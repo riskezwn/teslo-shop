@@ -1,10 +1,7 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState, useEffect } from 'react';
-// import { GetServerSideProps } from 'next';
 import NextLink from 'next/link';
 import { signIn, getProviders } from 'next-auth/react';
-// eslint-disable-next-line camelcase
-// import { unstable_getServerSession } from 'next-auth';
 import {
   Box, Button, Chip, Divider, Grid, Link, TextField, Typography,
 } from '@mui/material';
@@ -14,7 +11,6 @@ import { useRouter } from 'next/router';
 import { AuthLayout } from '../../components/layouts';
 import { validations } from '../../utils';
 import GoogleLoginButton from '../../components/ui/social/GoogleLoginButton';
-// import { authOptions } from '../api/auth/[...nextauth]';
 
 type FormData = {
   email: string,
@@ -23,7 +19,6 @@ type FormData = {
 
 export const LoginPage = () => {
   const { query } = useRouter();
-
   const destination = query.p?.toString() || '/';
 
   const {
@@ -39,7 +34,7 @@ export const LoginPage = () => {
     getProviders().then((prov) => {
       setProviders(prov);
     });
-  }, []);
+  }, [query]);
 
   const onLogin = async ({ email, password }: FormData) => {
     setShowError(false);
@@ -60,17 +55,20 @@ export const LoginPage = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h1" component="h1">Log in</Typography>
-              <Chip
-                label="Email or password does not match"
-                color="error"
-                icon={<ErrorOutline />}
-                className="fadeIn"
-                sx={{
-                  my: 1,
-                  width: '100%',
-                  display: showError ? 'flex' : 'none',
-                }}
-              />
+              {
+                showError && (
+                  <Chip
+                    label="Email or password does not match"
+                    color="error"
+                    icon={<ErrorOutline />}
+                    className="fadeIn"
+                    sx={{
+                      my: 1,
+                      width: '100%',
+                    }}
+                  />
+                )
+              }
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -125,13 +123,13 @@ export const LoginPage = () => {
                 Object.values(providers).map((provider: any) => {
                   switch (provider.id) {
                     case 'credentials':
-                      return (<div key="provider.id" />);
+                      return (<div key={provider.id} />);
                     case 'google':
                       return (
-                        <GoogleLoginButton />
+                        <GoogleLoginButton key={provider.id} />
                       );
                     default:
-                      return (<div key="provider.id" />);
+                      return (<div key={provider.id} />);
                   }
                 })
               }
@@ -142,23 +140,5 @@ export const LoginPage = () => {
     </AuthLayout>
   );
 };
-
-// export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
-//   const session = await unstable_getServerSession(req, res, authOptions);
-//   const { p = '/' } = query;
-
-//   if (session) {
-//     return {
-//       redirect: {
-//         destination: p.toString(),
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: {},
-//   };
-// };
 
 export default LoginPage;
