@@ -7,7 +7,7 @@ import axios, { AxiosError } from 'axios';
 import { useSession, signOut } from 'next-auth/react';
 import { AuthContext, authReducer } from '.';
 import { tesloApi } from '../../api_base';
-import { IUser } from '../../interfaces';
+import { IUser, Response } from '../../interfaces';
 
 interface Props {
   children: ReactNode
@@ -16,11 +16,6 @@ interface Props {
 export interface AuthState {
   isLogged: boolean;
   user?: IUser;
-}
-
-export interface RegisterResponse {
-  hasError: boolean;
-  message?: string;
 }
 
 const AUTH_INITIAL_STATE: AuthState = {
@@ -67,7 +62,7 @@ export const AuthProvider:FC<Props> = ({ children }) => {
     }
   };
 
-  const registerUser = async (email: string, password: string, name: string): Promise<RegisterResponse> => {
+  const registerUser = async (email: string, password: string, name: string): Promise<Response> => {
     try {
       const { data } = await tesloApi.post('/user/register', { email, password, name });
       const { token, user } = data;

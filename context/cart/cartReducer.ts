@@ -10,6 +10,7 @@ type CartActionType =
   | { type: '[Cart] Update order summary', payload: IOrderSummary }
   | { type: '[Cart] Load address from cookies', payload: IShippingAddress }
   | { type: '[Cart] Update address', payload: IShippingAddress }
+  | { type: '[Cart] Order complete' }
 
 export const cartReducer = (state: CartState, action: CartActionType): CartState => {
   switch (action.type) {
@@ -48,6 +49,17 @@ export const cartReducer = (state: CartState, action: CartActionType): CartState
       return {
         ...state,
         shippingAddress: action.payload,
+      };
+    case '[Cart] Order complete':
+      return {
+        ...state,
+        cart: [],
+        orderSummary: {
+          numberOfItems: 0,
+          subTotal: 0,
+          total: 0,
+          tax: 0,
+        },
       };
     default:
       return state;

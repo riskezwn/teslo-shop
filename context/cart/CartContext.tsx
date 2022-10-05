@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { createContext } from 'react';
-import { ICartProduct, IOrderSummary, IShippingAddress } from '../../interfaces';
+import {
+  ICartProduct, IOrderSummary, IShippingAddress, Response,
+} from '../../interfaces';
 
 interface ContextProps {
   isLoaded: boolean;
@@ -13,7 +15,7 @@ interface ContextProps {
   removeCartProduct: (product: ICartProduct) => void;
   updateAddress: (address: IShippingAddress) => void;
   // Orders
-  createOrder: () => Promise<void>;
+  createOrder: () => Promise<Response>
 }
 
 export const CartContext = createContext({} as ContextProps);

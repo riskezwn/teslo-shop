@@ -4,9 +4,10 @@ import React, {
   FC, ReactNode, useEffect, useMemo, useReducer, useRef,
 } from 'react';
 import Cookie from 'js-cookie';
+import axios from 'axios';
 import { CartContext, cartReducer } from '.';
 import {
-  ICartProduct, IOrder, IOrderSummary, IShippingAddress,
+  ICartProduct, IOrder, IOrderSummary, IShippingAddress, Response,
 } from '../../interfaces';
 import { tesloApi } from '../../api_base';
 
@@ -152,7 +153,7 @@ export const CartProvider:FC<Props> = ({ children }) => {
     dispatch({ type: '[Cart] Update address', payload: address });
   };
 
-  const createOrder = async () => {
+  const createOrder = async ():Promise<Response> => {
     if (!state.shippingAddress) {
       throw new Error('Invalid shipping address');
     }
@@ -169,8 +170,24 @@ export const CartProvider:FC<Props> = ({ children }) => {
 
     try {
       const { data } = await tesloApi.post('/orders', body);
+      dispatch({ type: '[Cart] Order complete' });
+
+      return {
+        hasError: false,
+        message: data._id,
+      };
     } catch (error: any) {
-      throw new Error(error);
+      if (axios.isAxiosError(error) && error instanceof Error) {
+        const err = error as any;
+        return {
+          hasError: true,
+          message: err.response?.data.message,
+        };
+      }
+      return {
+        hasError: true,
+        message: 'Error creating order',
+      };
     }
   };
 

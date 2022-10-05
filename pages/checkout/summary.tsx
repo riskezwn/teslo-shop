@@ -1,8 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import {
-  Typography, Grid, Card, CardContent, Divider, Box, Button, Link, Alert,
+  Typography, Grid, Card, CardContent, Divider, Box, Button, Link, Alert, Chip,
 } from '@mui/material';
 import Cookies from 'js-cookie';
 import { ShopLayout } from '../../components/layouts';
@@ -14,14 +14,26 @@ const SummaryPage = () => {
   const { shippingAddress, createOrder } = useContext(CartContext);
   const router = useRouter();
 
+  const [isPosting, setIsPosting] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
+
   useEffect(() => {
     if (!Cookies.get('firstName')) {
       router.push('/checkout/address');
     }
   }, []);
 
-  const onCreateOrder = () => {
-    createOrder();
+  const onCreateOrder = async () => {
+    setIsPosting(true);
+    const { hasError, message } = await createOrder();
+
+    if (hasError && message) {
+      setIsPosting(false);
+      setErrorMessage(message);
+      return;
+    }
+
+    router.replace(`/order/${message}`);
   };
 
   if (!shippingAddress) {
@@ -94,15 +106,24 @@ const SummaryPage = () => {
               </Box>
               <OrderSummary />
 
-              <Box sx={{ mt: 3 }}>
+              <Box sx={{ mt: 3 }} display="flex" flexDirection="column" gap={2}>
                 <Button
                   color="secondary"
                   className="circular-btn"
                   fullWidth
                   onClick={onCreateOrder}
+                  disabled={isPosting}
                 >
                   Confirm order
                 </Button>
+                {
+                  errorMessage && (
+                    <Chip
+                      color="error"
+                      label={errorMessage}
+                    />
+                  )
+                }
               </Box>
             </CardContent>
           </Card>
