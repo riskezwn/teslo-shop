@@ -1,55 +1,45 @@
 /* eslint-disable no-param-reassign */
-import NextAuth, { NextAuthOptions } from 'next-auth';
+import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { dbUsers } from '../../../database';
 
-export const authOptions: NextAuthOptions = {
+export const authOptions = {
+  // Configure one or more authentication providers
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: 'email',
       credentials: {
         email: { label: 'Email', type: 'email', placeholder: 'john@doe.com' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
-        return dbUsers.checkUserEmailPassword(credentials!.email, credentials!.password);
+      async authorize() {
+        const user = { id: 1, name: 'J Smith', email: 'jsmith@example.com' };
+
+        if (user) {
+          return user;
+        }
+        return null;
       },
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    // ...add more providers here
   ],
-  // Custom pages
-  pages: {
-    signIn: '/auth/login',
-    newUser: '/auth/register',
-  },
-  // Callbacks
-  session: {
-    maxAge: 2592000, // 30 days
-    strategy: 'jwt',
-    updateAge: 86400, // daily
-  },
   callbacks: {
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user }: any) {
       if (account?.access_token) {
         token.accessToken = account.access_token;
       }
       if (account) {
         switch (account.type) {
           case 'oauth': {
-            const dbUser = await dbUsers.checkOAuthToUser(user?.email || '', user?.name || '');
-            token.user = dbUser;
-            token.role = dbUser.role;
+            token.user = user;
             break;
           }
           case 'credentials':
-            if (user?.role) {
-              token.user = user;
-              token.role = user.role;
-            }
+            token.user = user;
             break;
           default:
             break;
@@ -57,16 +47,10 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session: userSession, token }) {
+    async session({ session: userSession, token }: any) {
       const session: any = userSession;
       if (token?.accesToken) {
         session.accessToken = token.accessToken;
-      }
-      if (token?.role) {
-        session.user = token.user as any;
-        if (session.user) {
-          session.user.role = token.role;
-        }
       }
       return session;
     },
