@@ -85,14 +85,14 @@ export const CartProvider:FC<Props> = ({ children }) => {
 
   useEffect(() => {
     const numberOfItems = state.cart.reduce((prev, current) => current.quantity + prev, 0);
-    const subTotal = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0);
+    const total = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0);
     const taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0);
 
     const orderSummary: IOrderSummary = {
       numberOfItems,
-      subTotal,
-      tax: subTotal * taxRate,
-      total: subTotal * (taxRate + 1),
+      subTotal: total * (1 - taxRate),
+      tax: total - (total * (1 - taxRate)),
+      total,
     };
     dispatch({ type: '[Cart] Update order summary', payload: orderSummary });
   }, [state.cart]);

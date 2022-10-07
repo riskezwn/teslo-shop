@@ -34,8 +34,7 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
       return currentPrice * current.quantity + prev;
     }, 0);
 
-    const taxRate = Number(process.env.NEXT_PUBLIC_TAX_RATE || 0);
-    const serverTotal = subTotal * (taxRate + 1);
+    const serverTotal = subTotal;
 
     if (total !== serverTotal) {
       throw new Error('Total does not match');
@@ -44,6 +43,11 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
     // All OK
     const userId = session.user._id;
     const newOrder = new Order({ ...req.body, isPaid: false, user: userId });
+
+    newOrder.orderSummary.total = Math.round(newOrder.orderSummary.total * 100) / 100;
+    newOrder.orderSummary.subTotal = Math.round(newOrder.orderSummary.subTotal * 100) / 100;
+    newOrder.orderSummary.tax = Math.round(newOrder.orderSummary.tax * 100) / 100;
+
     await newOrder.save();
     await db.disconnect();
 

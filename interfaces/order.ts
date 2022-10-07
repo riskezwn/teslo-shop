@@ -22,4 +22,5 @@ export interface IOrder {
   orderSummary: IOrderSummary;
   isPaid: boolean;
   paidAt?: string;
+  transactionId?: string;
 }
