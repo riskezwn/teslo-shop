@@ -6,6 +6,7 @@ import {
 import { CreditCardOffOutlined, CreditCardOutlined } from '@mui/icons-material';
 // eslint-disable-next-line camelcase
 import { unstable_getServerSession } from 'next-auth';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 import { ShopLayout } from '../../components/layouts';
 import { CartList, OrderSummary } from '../../components/cart';
 import { authOptions } from '../api/auth/[...nextauth]';
@@ -91,7 +92,23 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                       icon={<CreditCardOutlined />}
                     />
                   ) : (
-                    <h1>Pay</h1>
+                    <PayPalButtons
+                      createOrder={(data, actions) => actions.order.create({
+                        purchase_units: [
+                          {
+                            amount: {
+                              value: order.orderSummary.total.toString(),
+                            },
+                          },
+                        ],
+                      })}
+                      onApprove={(data, actions) => actions.order.capture().then((details) => {
+                        console.log({ details });
+
+                        const name = details.payer.name.given_name;
+                        alert(`Transaction completed by ${name}`);
+                      })}
+                    />
                   )
                 }
               </Box>
