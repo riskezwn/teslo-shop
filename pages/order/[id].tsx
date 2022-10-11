@@ -7,23 +7,54 @@ import { CreditCardOffOutlined, CreditCardOutlined } from '@mui/icons-material';
 // eslint-disable-next-line camelcase
 import { unstable_getServerSession } from 'next-auth';
 import { PayPalButtons } from '@paypal/react-paypal-js';
+import { useRouter } from 'next/router';
 import { ShopLayout } from '../../components/layouts';
 import { CartList, OrderSummary } from '../../components/cart';
 import { authOptions } from '../api/auth/[...nextauth]';
 import { dbOrders } from '../../database';
 import { IOrder } from '../../interfaces';
 import countries from '../../utils/countries';
+import { tesloApi } from '../../api_base';
+
+export type OrderResponseBody = {
+  id: string;
+  status:
+      | 'COMPLETED'
+      | 'SAVED'
+      | 'APPROVED'
+      | 'VOIDED'
+      | 'COMPLETED'
+      | 'PAYER_ACTION_REQUIRED';
+};
 
 interface Props {
   order: IOrder
 }
 
 const OrderPage: NextPage<Props> = ({ order }) => {
+  const router = useRouter();
   const {
     _id, isPaid, orderSummary, shippingAddress, orderItems,
   } = order;
 
   const countryName = countries.find((c) => c.code === shippingAddress.country);
+
+  const onOrderCompleted = async (details: OrderResponseBody) => {
+    if (details.status !== 'COMPLETED') {
+      throw new Error('Order not paid in Paypal');
+    }
+
+    try {
+      const { data } = await tesloApi.post('/orders/pay', {
+        transactionId: details.id,
+        orderId: _id,
+      });
+
+      router.reload();
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  };
 
   return (
     <ShopLayout title={`Order - ${_id}`} pageDescription="Your order summary">
@@ -103,10 +134,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                         ],
                       })}
                       onApprove={(data, actions) => actions.order.capture().then((details) => {
-                        console.log({ details });
-
-                        const name = details.payer.name.given_name;
-                        alert(`Transaction completed by ${name}`);
+                        onOrderCompleted(details);
                       })}
                     />
                   )
