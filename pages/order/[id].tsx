@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GetServerSideProps, NextPage } from 'next';
 import {
-  Typography, Grid, Card, CardContent, Divider, Box, Chip,
+  Typography, Grid, Card, CardContent, Divider, Box, Chip, CircularProgress,
 } from '@mui/material';
 import { CreditCardOffOutlined, CreditCardOutlined } from '@mui/icons-material';
 // eslint-disable-next-line camelcase
@@ -36,6 +36,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
   const {
     _id, isPaid, orderSummary, shippingAddress, orderItems,
   } = order;
+  const [isPaying, setIsPaying] = useState<boolean>(false);
 
   const countryName = countries.find((c) => c.code === shippingAddress.country);
 
@@ -43,6 +44,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
     if (details.status !== 'COMPLETED') {
       throw new Error('Order not paid in Paypal');
     }
+    setIsPaying(true);
 
     try {
       const { data } = await tesloApi.post('/orders/pay', {
@@ -50,8 +52,9 @@ const OrderPage: NextPage<Props> = ({ order }) => {
         orderId: _id,
       });
 
-      router.reload();
+      if (data) router.reload();
     } catch (error) {
+      setIsPaying(false);
       throw new Error(error as string);
     }
   };
@@ -113,6 +116,16 @@ const OrderPage: NextPage<Props> = ({ order }) => {
               <Divider sx={{ my: 1 }} />
               <OrderSummary summary={orderSummary} />
               <Box sx={{ mt: 3 }} display="flex" flexDirection="column">
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  className="fadeIn"
+                  sx={{
+                    display: isPaying ? 'flex' : 'none',
+                  }}
+                >
+                  <CircularProgress />
+                </Box>
                 {
                   isPaid ? (
                     <Chip
@@ -123,20 +136,32 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                       icon={<CreditCardOutlined />}
                     />
                   ) : (
-                    <PayPalButtons
-                      createOrder={(data, actions) => actions.order.create({
-                        purchase_units: [
-                          {
-                            amount: {
-                              value: order.orderSummary.total.toString(),
-                            },
-                          },
-                        ],
-                      })}
-                      onApprove={(data, actions) => actions.order.capture().then((details) => {
-                        onOrderCompleted(details);
-                      })}
-                    />
+                    <Box>
+                      {
+                      !isPaying && (
+                        <PayPalButtons
+                          createOrder={(data, actions) => actions.order.create({
+                            purchase_units: [
+                              {
+                                amount: {
+                                  value: order.orderSummary.total.toString(),
+                                },
+                              },
+                            ],
+                          })}
+                          onApprove={(data, actions) => {
+                            if (actions.order) {
+                              return actions.order.capture().then(
+                                (details) => onOrderCompleted(details),
+                              );
+                            }
+                            throw new Error('Error trying to make the payment');
+                          }}
+
+                        />
+                      )
+                     }
+                    </Box>
                   )
                 }
               </Box>
