@@ -18,6 +18,7 @@ import {
   AdminPanelSettings,
   CategoryOutlined,
   ConfirmationNumberOutlined,
+  DashboardOutlined,
   EscalatorWarningOutlined,
   FemaleOutlined,
   LoginOutlined,
@@ -31,6 +32,12 @@ import { AuthContext, UIContext } from '../../context';
 const AdminOptions = () => (
   <>
     <ListSubheader>Admin Panel</ListSubheader>
+    <ListItemButton>
+      <ListItemIcon>
+        <DashboardOutlined />
+      </ListItemIcon>
+      <ListItemText primary="Dashboard" />
+    </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
         <CategoryOutlined />
