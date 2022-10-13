@@ -30,7 +30,7 @@ export const AdminLayout: FC<Props> = ({
       padding: '0 30px',
     }}
     >
-      <Box display="flex" flexDirection="column" mb={1}>
+      <Box display="flex" flexDirection="column" mb={4}>
         <Typography variant="h1" component="h1" display="flex" justifyContent="start" alignItems="center">
           {icon}
           {' '}

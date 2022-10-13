@@ -29,35 +29,53 @@ import {
 import { useRouter } from 'next/router';
 import { AuthContext, UIContext } from '../../context';
 
-const AdminOptions = () => (
-  <>
-    <ListSubheader>Admin Panel</ListSubheader>
-    <ListItemButton>
-      <ListItemIcon>
-        <DashboardOutlined />
-      </ListItemIcon>
-      <ListItemText primary="Dashboard" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <CategoryOutlined />
-      </ListItemIcon>
-      <ListItemText primary="Products" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <ConfirmationNumberOutlined />
-      </ListItemIcon>
-      <ListItemText primary="Orders" />
-    </ListItemButton>
-    <ListItemButton>
-      <ListItemIcon>
-        <AdminPanelSettings />
-      </ListItemIcon>
-      <ListItemText primary="Users" />
-    </ListItemButton>
-  </>
-);
+const AdminOptions = () => {
+  const router = useRouter();
+  const { toggleSideMenu } = useContext(UIContext);
+
+  const navigateTo = (url: string) => {
+    toggleSideMenu();
+    router.push(url);
+  };
+
+  return (
+    <>
+      <ListSubheader>Admin Panel</ListSubheader>
+      <ListItemButton
+        onClick={() => navigateTo('/admin')}
+      >
+        <ListItemIcon>
+          <DashboardOutlined />
+        </ListItemIcon>
+        <ListItemText primary="Dashboard" />
+      </ListItemButton>
+      <ListItemButton
+        onClick={() => navigateTo('/admin/products')}
+      >
+        <ListItemIcon>
+          <CategoryOutlined />
+        </ListItemIcon>
+        <ListItemText primary="Products" />
+      </ListItemButton>
+      <ListItemButton
+        onClick={() => navigateTo('/admin/orders')}
+      >
+        <ListItemIcon>
+          <ConfirmationNumberOutlined />
+        </ListItemIcon>
+        <ListItemText primary="Orders" />
+      </ListItemButton>
+      <ListItemButton
+        onClick={() => navigateTo('/admin/users')}
+      >
+        <ListItemIcon>
+          <AdminPanelSettings />
+        </ListItemIcon>
+        <ListItemText primary="Users" />
+      </ListItemButton>
+    </>
+  );
+};
 
 export const SideMenu = () => {
   const router = useRouter();
