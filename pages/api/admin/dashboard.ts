@@ -10,7 +10,7 @@ type Data =
   }
 
 const getSummaryData = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-  db.connect();
+  await db.connect();
   const [
     numberOfOrders,
     paidOrders,
@@ -28,7 +28,7 @@ const getSummaryData = async (req: NextApiRequest, res: NextApiResponse<Data>) =
     Product.count({ inStock: { $eq: 0 } }),
     Product.count({ inStock: { $lt: 10 } }),
   ]);
-  db.disconnect();
+  await db.disconnect();
 
   return res.status(200).json({
     numberOfOrders,
