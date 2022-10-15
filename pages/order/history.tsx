@@ -1,7 +1,6 @@
 import React from 'react';
 import NextLink from 'next/link';
 import { GetServerSideProps, NextPage } from 'next';
-
 import {
   Chip, Grid, Link, Typography,
 } from '@mui/material';
