@@ -12,12 +12,12 @@ const UsersPage = () => {
   return (
     <AdminLayout title="Users" subtitle="User maintenance" icon={<PeopleOutlined />}>
       {
-          (!users && !error) ? (
-            <FullScreenLoading />
-          ) : (
-            <UsersGrid users={users!} mutate={mutate} />
-          )
-        }
+        (!users && !error) ? (
+          <FullScreenLoading />
+        ) : (
+          <UsersGrid users={users!} mutate={mutate} />
+        )
+      }
     </AdminLayout>
   );
 };

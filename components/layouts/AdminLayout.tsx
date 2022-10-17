@@ -33,7 +33,7 @@ export const AdminLayout: FC<Props> = ({
       <Box display="flex" flexDirection="column" mb={4}>
         <Typography variant="h1" component="h1" display="flex" justifyContent="start" alignItems="center">
           {icon}
-          {' '}
+          &nbsp;
           {title}
         </Typography>
         <Typography variant="h2" component="h2">{subtitle}</Typography>

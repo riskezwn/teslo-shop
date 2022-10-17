@@ -5,10 +5,8 @@ import { User } from '../../../models';
 import { IUser } from '../../../interfaces';
 
 type Data =
-  | {
-  message: string;
-  }
   | IUser[]
+  | { message: string }
 
 const updateUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   const { userId = '', role = '' } = req.body;
