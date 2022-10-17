@@ -17,7 +17,9 @@ export const AdminLayout: FC<Props> = ({
   <>
     <Head>
       <title>
-        Dashboard - Teslo Shop
+        {title}
+        {' '}
+        - Teslo Shop
       </title>
     </Head>
     <nav>
