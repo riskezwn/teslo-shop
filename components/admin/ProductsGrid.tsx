@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import NextLink from 'next/link';
 import {
   DataGrid,
   GridColDef,
@@ -25,7 +26,15 @@ export const ProductsGrid: FC<Props> = ({ products }) => {
       ),
     },
     {
-      field: 'title', headerName: 'Title', minWidth: 250, flex: 1,
+      field: 'title',
+      headerName: 'Title',
+      minWidth: 250,
+      flex: 1,
+      renderCell: ({ row }: GridValueGetterParams) => (
+        <NextLink href={`/admin/products/${row.slug}`} passHref>
+          <Link href={`/admin/products/${row.slug}`} underline="always">{row.title}</Link>
+        </NextLink>
+      ),
     },
     { field: 'gender', headerName: 'Gender', flex: 1 },
     { field: 'type', headerName: 'Type', flex: 1 },
