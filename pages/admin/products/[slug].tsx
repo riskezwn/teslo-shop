@@ -27,6 +27,7 @@ import {
   IGender, IProduct, ISize, IType,
 } from '../../../interfaces';
 import { dbProducts } from '../../../database';
+import { tesloApi } from '../../../api_base';
 
 const validTypes: IType[] = ['shirts', 'pants', 'hoodies', 'hats'];
 const validGender: IGender[] = ['men', 'women', 'kid', 'unisex'];
@@ -52,6 +53,7 @@ interface Props {
 
 const ProductAdminPage:FC<Props> = ({ product }) => {
   const [newTagValue, setNewTagValue] = useState<string>('');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const {
     register, handleSubmit, formState: { errors }, getValues, setValue, watch,
@@ -99,8 +101,26 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     return setValue('tags', updatedTags, { shouldValidate: true });
   };
 
-  const onSubmitForm = (data: FormData) => {
-    console.log(data);
+  const onSubmitForm = async (data: FormData) => {
+    // TODO: change to snackbar
+    if (data.images.length < 2) return alert('At least 2 images are required');
+    setIsSaving(true);
+
+    try {
+      const resp = await tesloApi({
+        url: '/admin/products',
+        method: 'PUT', // PUT if have ID, POST if not
+        data,
+      });
+      setIsSaving(false);
+
+      // if (!data._id) {
+      //   // Reload
+      // }
+      return resp.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
   };
 
   return (
@@ -116,6 +136,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
             startIcon={<SaveOutlined />}
             sx={{ width: '150px' }}
             type="submit"
+            disabled={isSaving}
           >
             Save
           </Button>

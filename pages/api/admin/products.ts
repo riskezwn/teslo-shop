@@ -1,19 +1,76 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { isValidObjectId } from 'mongoose';
 import { db } from '../../../database';
 import { IProduct } from '../../../interfaces';
 import { Product } from '../../../models';
 
 type Data =
   | IProduct[]
+  | IProduct
   | { message: string }
 
 const getProducts = async (req: NextApiRequest, res: NextApiResponse<{ message: string; }>) => {
   await db.connect();
-  const products = await Product.find().sort({ title: 'asc' }).lean();
+  const products = await Product.find().sort({ title: 'asc' }).lean() as IProduct[];
   await db.disconnect();
 
   // TODO: Update images
   return res.status(200).json(products);
+};
+
+const createProduct = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const { images = [] } = req.body as IProduct;
+
+  if (images.length < 2) {
+    return res.status(400).json({ message: 'At least 2 images are required' });
+  }
+
+  try {
+    await db.connect();
+    const productInDB = await Product.findOne({ slug: req.body.slug });
+    if (productInDB) {
+      return res.status(400).json({ message: 'Product already exists' });
+    }
+
+    const product = new Product(req.body as IProduct);
+    await product.save();
+
+    await db.disconnect;
+
+    return res.status(201).json(product);
+  } catch (error: any) {
+    await db.disconnect();
+    throw new Error(error);
+  }
+};
+
+const updateProduct = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+  const { _id = '', images = [] } = req.body as IProduct;
+
+  if (!isValidObjectId(_id)) {
+    return res.status(400).json({ message: 'Id not valid' });
+  }
+  if (images.length < 2) {
+    return res.status(400).json({ message: 'At least 2 images are required' });
+  }
+
+  try {
+    await db.connect();
+    const product = await Product.findById(_id);
+
+    if (!product) {
+      return res.status(400).json({ message: 'Product does not exists' });
+    }
+
+    // Delete images in Cloudinary
+
+    await product.updateOne(req.body as IProduct);
+
+    await db.disconnect();
+    return res.status(201).json(product);
+  } catch (error: any) {
+    throw new Error(error);
+  }
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
@@ -21,9 +78,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
     case 'GET':
       return getProducts(req, res);
     case 'POST':
-      return res.status(400).json({ message: 'Bad request' });
+      return createProduct(req, res);
     case 'PUT':
-      return res.status(400).json({ message: 'Bad request' });
+      return updateProduct(req, res);
     default:
       return res.status(400).json({ message: 'Bad request' });
   }

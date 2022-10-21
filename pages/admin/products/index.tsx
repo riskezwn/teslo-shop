@@ -10,7 +10,11 @@ const OrdersPage = () => {
   const { data: products, error } = useSWR<IProduct[]>('/api/admin/products');
 
   return (
-    <AdminLayout title="Products" subtitle={`Products maintenance (${products?.length})`} icon={<CategoryOutlined />}>
+    <AdminLayout
+      title="Products"
+      subtitle={`Products maintenance (${products ? products.length : 0})`}
+      icon={<CategoryOutlined />}
+    >
       {
         (!products && !error) ? (
           <FullScreenLoading />
