@@ -1,26 +1,25 @@
 import bcrypt from 'bcryptjs';
-
-type ValidSizes = 'XS'|'S'|'M'|'L'|'XL'|'XXL'|'XXXL';
-type ValidTypes = 'shirts'|'pants'|'hoodies'|'hats';
+import { IUserRole } from '../interfaces';
+import { IGender, ISize, IType } from '../interfaces/products';
 
 interface SeedProduct {
   description: string;
   images: string[];
   inStock: number;
   price: number;
-  sizes: ValidSizes[];
+  sizes: ISize[];
   slug: string;
   tags: string[];
   title: string;
-  type: ValidTypes;
-  gender: 'men'|'women'|'kid'|'unisex'
+  type: IType;
+  gender: IGender;
 }
 
 interface SeedUser {
   name: string;
   email: string;
   password: string;
-  role: 'admin' | 'client';
+  role: IUserRole;
 }
 
 interface SeedData {

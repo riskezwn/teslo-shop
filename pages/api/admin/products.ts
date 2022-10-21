@@ -15,7 +15,7 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<{ message: 
   await db.disconnect();
 
   // TODO: Update images
-  return res.status(200).json(products);
+  return res.status(200).json(products as any);
 };
 
 const createProduct = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
