@@ -22,16 +22,14 @@ import {
   TextField,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
 import { AdminLayout } from '../../../components/layouts';
 import {
   IGender, IProduct, ISize, IType,
 } from '../../../interfaces';
-import { dbProducts } from '../../../database';
+import { dbProducts, SHOP_CONSTANTS } from '../../../database';
 import { tesloApi } from '../../../api_base';
-
-const validTypes: IType[] = ['shirts', 'pants', 'hoodies', 'hats'];
-const validGender: IGender[] = ['men', 'women', 'kid', 'unisex'];
-const validSizes: ISize[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+import { Product } from '../../../models';
 
 interface FormData {
   _id?: string;
@@ -52,6 +50,7 @@ interface Props {
 }
 
 const ProductAdminPage:FC<Props> = ({ product }) => {
+  const router = useRouter();
   const [newTagValue, setNewTagValue] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -109,14 +108,15 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     try {
       const resp = await tesloApi({
         url: '/admin/products',
-        method: 'PUT', // PUT if have ID, POST if not
+        method: data._id ? 'PUT' : 'POST', // PUT if have ID, POST if not
         data,
       });
-      setIsSaving(false);
 
-      // if (!data._id) {
-      //   // Reload
-      // }
+      if (!data._id) {
+        router.replace(`/admin/products/${data.slug}`);
+      } else {
+        setIsSaving(false);
+      }
       return resp.data;
     } catch (error: any) {
       throw new Error(error);
@@ -204,7 +204,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 onChange={({ target }) => setValue('type', target.value as IType, { shouldValidate: true })}
               >
                 {
-                  validTypes.map((option) => (
+                  SHOP_CONSTANTS.validTypes.map((option) => (
                     <FormControlLabel
                       key={option}
                       value={option}
@@ -223,7 +223,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 onChange={({ target }) => setValue('gender', target.value as IGender, { shouldValidate: true })}
               >
                 {
-                  validGender.map((option) => (
+                  SHOP_CONSTANTS.validGenders.map((option) => (
                     <FormControlLabel
                       key={option}
                       value={option}
@@ -238,7 +238,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
               <FormLabel>Sizes</FormLabel>
               <Box>
                 {
-                  validSizes.map((size: ISize) => (
+                  SHOP_CONSTANTS.validSizes.map((size: ISize) => (
                     <FormControlLabel
                       key={size}
                       control={<Checkbox checked={getValues('sizes').includes(size)} />}
@@ -348,7 +348,18 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { slug = '' } = query;
-  const product = await dbProducts.getProductBySlug(slug.toString());
+
+  let product: IProduct | null;
+
+  if (slug === 'new') {
+    const tempProduct = JSON.parse(JSON.stringify(new Product()));
+    delete tempProduct._id;
+    tempProduct.images = ['img1.jpg', 'img2.jpg'];
+
+    product = tempProduct;
+  } else {
+    product = await dbProducts.getProductBySlug(slug.toString());
+  }
 
   if (!product) {
     return {
