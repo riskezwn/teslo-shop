@@ -29,7 +29,7 @@ export const connect = async () => {
 
   await mongoose.connect(process.env.MONGO_URL || '');
   mongoConnection.isConnected = 1;
-  console.log('connected to db:', process.env.MONGO_URL);
+  console.log('connected to db');
 };
 
 export const disconnect = async () => {
