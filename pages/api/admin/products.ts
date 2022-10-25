@@ -17,8 +17,12 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<{ message: 
   const products = await Product.find().sort({ title: 'asc' }).lean() as IProduct[];
   await db.disconnect();
 
-  // TODO: Update images
-  return res.status(200).json(products as any);
+  const updatedProducts = products.map((product) => {
+    // eslint-disable-next-line no-param-reassign
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    return product;
+  });
+  return res.status(200).json(updatedProducts as any);
 };
 
 const createProduct = async (req: NextApiRequest, res: NextApiResponse<Data>) => {

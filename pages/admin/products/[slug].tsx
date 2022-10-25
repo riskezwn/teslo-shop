@@ -366,7 +366,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                         <CardMedia
                           component="img"
                           className="fadeIn"
-                          image={`/products/${img}`}
+                          image={img}
                           alt={img}
                         />
                         <CardActions>

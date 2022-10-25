@@ -9,6 +9,8 @@ export const getProductBySlug = async (slug: string): Promise<IProduct | null> =
 
   if (!product) return null;
 
+  product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+
   return JSON.parse(JSON.stringify(product));
 };
 
@@ -36,7 +38,11 @@ export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
     .lean();
   await db.disconnect();
 
-  return products;
+  return products.map((product) => {
+    // eslint-disable-next-line no-param-reassign
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    return product;
+  });
 };
 
 export const getAllProducts = async (): Promise<IProduct[]> => {
@@ -46,5 +52,9 @@ export const getAllProducts = async (): Promise<IProduct[]> => {
     .lean();
   await db.disconnect();
 
-  return products;
+  return products.map((product) => {
+    // eslint-disable-next-line no-param-reassign
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    return product;
+  });
 };

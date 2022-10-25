@@ -6,8 +6,7 @@ import {
 } from '@mui/material';
 import { ItemCounter } from '../ui';
 import { CartContext } from '../../context';
-import { ICartProduct } from '../../interfaces/cart';
-import { IOrderItem } from '../../interfaces';
+import { ICartProduct, IOrderItem } from '../../interfaces';
 
 interface Props {
   editable?: boolean;
@@ -46,7 +45,7 @@ export const CartList: FC<Props> = ({ editable = false, products }) => {
               <Link href={`/product/${product.slug}`}>
                 <CardActionArea>
                   <CardMedia
-                    image={`/products/${product.image}`}
+                    image={product.image}
                     component="img"
                     sx={{ borderRadius: '5px' }}
                   />

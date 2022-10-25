@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { db } from '../../../database';
-import { IProduct } from '../../../interfaces/products';
+import { IProduct } from '../../../interfaces';
 import { Product } from '../../../models';
 
 type Data =
@@ -15,6 +15,8 @@ const getProductBySlug = async (req: NextApiRequest, res: NextApiResponse<Data>)
   await db.disconnect();
 
   if (!product) return res.status(404).json({ message: 'Product not found' });
+
+  product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
 
   return res.status(200).json(product);
 };

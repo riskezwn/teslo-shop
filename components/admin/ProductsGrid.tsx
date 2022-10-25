@@ -21,7 +21,7 @@ export const ProductsGrid: FC<Props> = ({ products }) => {
       flex: 1,
       renderCell: ({ row }: GridValueGetterParams) => (
         <Link href={`/product/${row.slug}`} target="_blank" rel="noreferrer">
-          <CardMedia component="img" className="fadeIn" image={`/products/${row.image}`} />
+          <CardMedia component="img" className="fadeIn" image={row.image} />
         </Link>
       ),
     },
