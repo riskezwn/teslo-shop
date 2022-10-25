@@ -8,9 +8,8 @@ import {
 import { ShopLayout } from '../../components/layouts';
 import { ProductSlideshow, SizeSelector } from '../../components/products';
 import { ItemCounter } from '../../components/ui';
-import { IProduct, ICartProduct } from '../../interfaces';
+import { IProduct, ICartProduct, ISize } from '../../interfaces';
 import { getAllProductSlugs, getProductBySlug } from '../../database/dbProducts';
-import { ISize } from '../../interfaces/products';
 import { CartContext } from '../../context';
 
 interface Props {

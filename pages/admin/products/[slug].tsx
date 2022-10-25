@@ -1,5 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { FC, useEffect, useState } from 'react';
+import React, {
+  ChangeEvent,
+  FC, useEffect, useRef, useState,
+} from 'react';
 import { GetServerSideProps } from 'next';
 import { DriveFileRenameOutline, SaveOutlined, UploadOutlined } from '@mui/icons-material';
 import {
@@ -27,7 +30,7 @@ import { AdminLayout } from '../../../components/layouts';
 import {
   IGender, IProduct, ISize, IType,
 } from '../../../interfaces';
-import { dbProducts, SHOP_CONSTANTS } from '../../../database';
+import { dbProducts } from '../../../database';
 import { tesloApi } from '../../../api_base';
 import { Product } from '../../../models';
 
@@ -45,12 +48,18 @@ interface FormData {
   gender: IGender;
 }
 
+const validTypes: IType[] = ['shirts', 'pants', 'hoodies', 'hats'];
+const validGender: IGender[] = ['men', 'women', 'kid', 'unisex'];
+const validSizes: ISize[] = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'];
+
 interface Props {
   product: IProduct;
 }
 
 const ProductAdminPage:FC<Props> = ({ product }) => {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [newTagValue, setNewTagValue] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
@@ -100,6 +109,28 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
     return setValue('tags', updatedTags, { shouldValidate: true });
   };
 
+  const onDeleteImage = (image: string) => {
+    const updatedImages = getValues('images').filter((img) => img !== image);
+    return setValue('images', updatedImages, { shouldValidate: true });
+  };
+
+  const onFilesSelected = async ({ target }: ChangeEvent<HTMLInputElement>) => {
+    if (!target.files || target.files.length === 0) return;
+
+    try {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const file of target.files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        tesloApi.post<{message: string}>('/admin/upload', formData).then(({ data }) => {
+          setValue('images', [...getValues('images'), data.message], { shouldValidate: true });
+        });
+      }
+    } catch (e: any) {
+      throw new Error(e);
+    }
+  };
+
   const onSubmitForm = async (data: FormData) => {
     // TODO: change to snackbar
     if (data.images.length < 2) return alert('At least 2 images are required');
@@ -113,7 +144,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
       });
 
       if (!data._id) {
-        router.replace(`/admin/products/${data.slug}`);
+        await router.replace(`/admin/products/${data.slug}`);
       } else {
         setIsSaving(false);
       }
@@ -204,7 +235,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 onChange={({ target }) => setValue('type', target.value as IType, { shouldValidate: true })}
               >
                 {
-                  SHOP_CONSTANTS.validTypes.map((option) => (
+                  validTypes.map((option) => (
                     <FormControlLabel
                       key={option}
                       value={option}
@@ -223,7 +254,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 onChange={({ target }) => setValue('gender', target.value as IGender, { shouldValidate: true })}
               >
                 {
-                  SHOP_CONSTANTS.validGenders.map((option) => (
+                  validGender.map((option) => (
                     <FormControlLabel
                       key={option}
                       value={option}
@@ -238,7 +269,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
               <FormLabel>Sizes</FormLabel>
               <Box>
                 {
-                  SHOP_CONSTANTS.validSizes.map((size: ISize) => (
+                  validSizes.map((size: ISize) => (
                     <FormControlLabel
                       key={size}
                       control={<Checkbox checked={getValues('sizes').includes(size)} />}
@@ -309,17 +340,27 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                 fullWidth
                 startIcon={<UploadOutlined />}
                 sx={{ mb: 3 }}
+                onClick={() => fileInputRef.current?.click()}
               >
                 Upload image
               </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/png, image/gif, image/jpg"
+                style={{ display: 'none' }}
+                onChange={onFilesSelected}
+              />
               <Chip
                 label="At least 2 images are required"
                 color="error"
                 variant="outlined"
+                sx={{ display: getValues('images').length < 2 ? 'flex' : 'none' }}
               />
               <Grid container spacing={2}>
                 {
-                  product.images.map((img) => (
+                  getValues('images').map((img) => (
                     <Grid item xs={4} sm={3} key={img}>
                       <Card>
                         <CardMedia
@@ -329,7 +370,7 @@ const ProductAdminPage:FC<Props> = ({ product }) => {
                           alt={img}
                         />
                         <CardActions>
-                          <Button fullWidth color="error">
+                          <Button fullWidth color="error" onClick={() => onDeleteImage(img)}>
                             Delete
                           </Button>
                         </CardActions>

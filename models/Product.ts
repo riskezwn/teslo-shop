@@ -13,7 +13,6 @@ const productSchema = new Schema(
         values: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
         message: '{VALUE} is not a valid size',
       },
-      default: 'XS',
     }],
     slug: { type: String, required: true, unique: true },
     tags: [{ type: String }],
