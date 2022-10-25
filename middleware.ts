@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 export const config = {
-  matcher: ['/checkout/:path*', '/auth/:path*', '/admin/:path*', '/api/admin/:path*'],
+  matcher: ['/checkout/:path*', '/auth/:path*', '/admin/:path*', '/((?!api/)/admin/:path.*)'],
 };
 
 export async function middleware(req: NextRequest) {
@@ -43,12 +43,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // Auth
-  if (req.url.includes('/auth')) {
+  /*  if (req.nextUrl.pathname.startsWith('/auth')) {
     if (session) {
-      return NextResponse.redirect(new URL('/', req.url));
+      return NextResponse.next();
     }
     return NextResponse.next();
-  }
+  } */
 
   return NextResponse.next();
 }
