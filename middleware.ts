@@ -9,6 +9,15 @@ export const config = {
 export async function middleware(req: NextRequest) {
   const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET }) as any;
 
+  // Auth
+  if (req.nextUrl.pathname.startsWith('/auth')) {
+    if (!session) {
+      return NextResponse.next();
+    }
+    const direction = req.nextUrl.searchParams.get('p') || '/';
+    return NextResponse.redirect(new URL(direction, req.url));
+  }
+
   // Admin
   if (!session) {
     if (req.nextUrl.pathname.startsWith('/api/admin')) {
@@ -41,14 +50,6 @@ export async function middleware(req: NextRequest) {
     }
     return NextResponse.next();
   }
-
-  // Auth
-  /*  if (req.nextUrl.pathname.startsWith('/auth')) {
-    if (session) {
-      return NextResponse.next();
-    }
-    return NextResponse.next();
-  } */
 
   return NextResponse.next();
 }
