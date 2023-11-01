@@ -19,7 +19,7 @@ const getProducts = async (req: NextApiRequest, res: NextApiResponse<{ message: 
 
   const updatedProducts = products.map((product) => {
     // eslint-disable-next-line no-param-reassign
-    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.APP_URL}/products/${image}`));
     return product;
   });
   return res.status(200).json(updatedProducts as any);

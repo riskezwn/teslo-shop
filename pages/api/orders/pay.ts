@@ -8,7 +8,7 @@ type Data = {
   message: string
 }
 
-const getPaypalBearerToken = async (): Promise<string|null> => {
+const getPaypalBearerToken = async ():Promise<string|null> => {
   const PAYPAL_PUBLIC = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
   const { PAYPAL_SECRET } = process.env;
   const base64Token = Buffer.from(`${PAYPAL_PUBLIC}:${PAYPAL_SECRET}`, 'utf-8').toString('base64');

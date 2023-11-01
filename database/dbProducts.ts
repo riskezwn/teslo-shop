@@ -9,7 +9,7 @@ export const getProductBySlug = async (slug: string): Promise<IProduct | null> =
 
   if (!product) return null;
 
-  product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+  product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.APP_URL}/products/${image}`));
 
   return JSON.parse(JSON.stringify(product));
 };
@@ -40,7 +40,7 @@ export const getProductsByTerm = async (term: string): Promise<IProduct[]> => {
 
   return products.map((product) => {
     // eslint-disable-next-line no-param-reassign
-    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.APP_URL}/products/${image}`));
     return product;
   });
 };
@@ -54,7 +54,7 @@ export const getAllProducts = async (): Promise<IProduct[]> => {
 
   return products.map((product) => {
     // eslint-disable-next-line no-param-reassign
-    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.NEXTAUTH_URL}/products/${image}`));
+    product.images = product.images.map((image) => (image.includes('http') ? image : `${process.env.APP_URL}/products/${image}`));
     return product;
   });
 };
