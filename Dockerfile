@@ -9,7 +9,7 @@ RUN yarn install --frozen-lockfile
 # If using npm with a `package-lock.json` comment out above and use below instead
 # RUN npm ci
 
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
 # then put the value on your fly.toml
@@ -25,8 +25,8 @@ RUN yarn build
 FROM node:16-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -35,7 +35,7 @@ COPY --from=builder /app ./
 
 USER nextjs
 
-ENV PORT 3000
+ENV PORT=3000
 
 CMD ["yarn", "start"]
 
