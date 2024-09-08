@@ -1,5 +1,8 @@
 {
   "name": "teslo-shop",
+  "engines": {
+    "node": "18"
+  },
   "version": "0.1.0",
   "private": true,
   "scripts": {
